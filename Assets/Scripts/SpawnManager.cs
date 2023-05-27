@@ -7,10 +7,11 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     //敌人数组：用于存放各种敌人
-    public GameObject[] enemyLst;
+    public GameObject[] spawnList;
     //波次数组：数组长度为波次数量，每个元素的值为本波生成的数量
     public int[] wave;
     public int enemyCount;//显示当前实时敌人数量
+    public int currentWave;//记录当前波次
 
     void Start()
     {
@@ -20,26 +21,30 @@ public class SpawnManager : MonoBehaviour
     {
         enemyCount = FindObjectsOfType<Enemy>().Length;
         //i为波次
-        for (int i = 0; i < wave.Length;)
-        {
-            Debug.Log("i"+i);
-            //j为当前波次的敌人数量
-            for (int j = 0; j < wave[i]; j++)
+        
+            if (enemyCount == 0&& currentWave<wave.Length)
             {
-                Debug.Log("j"+j);
-                Spawn();
-                if (enemyCount == 0)
-                    i++;
+                for (int i = 0; i < wave[currentWave]; i++)
+                {
+                    SpawnEnemy();  
+                }
+                currentWave++;
             }
-        }
+        
     }
 
     //生成敌人
-    void Spawn()
+    void SpawnEnemy()
     {
-        int enemyIndex = Random.Range(0, enemyLst.Length );
+        Debug.Log("SpawnEnemy");
+        int enemyIndex = Random.Range(0, spawnList.Length );
 
-        Instantiate(enemyLst[enemyIndex], Random.insideUnitSphere * 3, transform.rotation);
+         Instantiate(spawnList[enemyIndex], Random.insideUnitSphere * 3, transform.rotation);
+    }
+
+    void SpawnPowerup()
+    {
+
     }
 }
 

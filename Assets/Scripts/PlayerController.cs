@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("FocalPoint");
-        //powerupIndicator = GameObject.Find("PowerupIndicator");
+
     }
 
     void Update()
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        //注意：这里尽在碰到Enemy标签的物体时执行if语句
+        //注意：这里仅在碰到Enemy标签的物体时执行if语句
         if (collision.gameObject.CompareTag("Enemy")&&hasPowerup)
         {
             Debug.Log(collision.gameObject.name);
