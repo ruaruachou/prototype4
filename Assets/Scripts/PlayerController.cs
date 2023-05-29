@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PowerupCountdownRoutine());
         }
 
-        if (other.name == "PowerupShot")
+        if (other.name == "PowerupShot"||other.name== "PowerupShot(Clone)")
         {
             hasPowerupShot = true;
             Destroy(other.gameObject);
@@ -105,14 +105,17 @@ public class PlayerController : MonoBehaviour
         Shot();
         yield return new WaitForSeconds(shotInterval);
         Shot();
+        canShot = true;
     }
     void Shot()
     {
-        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        List<Enemy> enemies = new List<Enemy>(FindObjectsOfType<Enemy>());
 
-        // 遍历敌人数组，为每个敌人生成子弹
-        foreach (Enemy enemy in enemies)
+        // 遍历敌人列表，为每个敌人生成子弹
+        for (int i = 0; i < enemies.Count; i++)
         {
+            Enemy enemy = enemies[i];
+
             // 实例化子弹预制体
             GameObject bulletObj = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             Bullet bullet = bulletObj.GetComponent<Bullet>();

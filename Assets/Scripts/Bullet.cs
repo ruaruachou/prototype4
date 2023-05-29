@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
             Vector3 dir = (targetEnemy.transform.position - transform.position);
             transform.Translate(dir * 10 * Time.deltaTime);
         }
+        else if (targetEnemy == null) { Destroy(gameObject); }
     }
 
  
@@ -20,7 +21,10 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Destroy(collision.gameObject);
+            Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
+            Vector3 awayFromBullet = (collision.transform.position - transform.position);
+            enemyRb.AddForce(awayFromBullet * 50, ForceMode.Impulse);
+            Destroy(gameObject);
         }
     }
 }

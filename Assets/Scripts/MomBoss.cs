@@ -18,6 +18,6 @@ public class MomBoss : MonoBehaviour
     }
     void Spawn()
     {
-        Instantiate(sonEnemy, transform.position, transform.rotation);
+        Instantiate(sonEnemy, transform.position+new Vector3(2,0,0), transform.rotation);
     }
 }
