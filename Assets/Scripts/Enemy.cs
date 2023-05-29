@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
     }
 void Destroy()
     {
-        if (transform.position.y < -20)
+        if (transform.position.y < -5)
         {
             Destroy(gameObject);
         }
