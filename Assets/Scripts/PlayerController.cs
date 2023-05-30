@@ -11,12 +11,17 @@ public class PlayerController : MonoBehaviour
     public GameObject powerupIndicator;
     public GameObject powerupShotIndicator;
     public GameObject bulletPrefab;
+    public GameObject PowerupSmashIndicator;
     private Bullet bullet;
 
     public bool hasPowerup = false;
     public bool hasPowerupShot = false;
     private bool canShot = true;
     public float shotInterval = 1f;
+    public bool hasPowerupSmash = false;
+    public float smashJumpForce = 10f;
+    private bool canSmash = true;
+
 
     public float powerupForce = 20;
     public float powerDur = 20;
@@ -35,11 +40,17 @@ public class PlayerController : MonoBehaviour
         playerRb.AddForce(focalPoint.transform.forward * moveSpeed * ver);
         powerupIndicator.gameObject.transform.position = transform.position;
         powerupShotIndicator.gameObject.transform.position = transform.position;
+        PowerupSmashIndicator.gameObject.transform.position = transform.position;
 
         if (hasPowerupShot && canShot)
         {
             Shot();
             StartCoroutine(ShotRoutine());
+        }
+        if (hasPowerupSmash&&canSmash)
+        {
+            Smash();
+            StartCoroutine(SmashRoutine());
         }
     }
 
@@ -49,7 +60,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Powerup"))
-        {
+        {//开启Powerup
             hasPowerup = true;
             Destroy(other.gameObject);
             powerupIndicator.gameObject.SetActive(true);
@@ -57,14 +68,21 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PowerupCountdownRoutine());
         }
 
-        if (other.name == "PowerupShot"||other.name== "PowerupShot(Clone)")
-        {
+        if (other.name == "PowerupShot" || other.name == "PowerupShot(Clone)")
+        {//开启射击
             hasPowerupShot = true;
             Destroy(other.gameObject);
             powerupShotIndicator.gameObject.SetActive(true);
 
-
             StartCoroutine(PowerupShotCountdownRoutine());
+        }
+        if (other.name == "PowerupSmash" || other.name == "PowerupSmash(Clone)")
+        {//开启Smash
+            hasPowerupSmash = true;
+            Destroy(other.gameObject);
+            PowerupSmashIndicator.gameObject.SetActive(true);
+
+            StartCoroutine(SmashCountdownRoutine());
         }
     }
     private void OnCollisionEnter(Collision collision)
@@ -73,23 +91,28 @@ public class PlayerController : MonoBehaviour
         //Powerup效果
         if (collision.gameObject.CompareTag("Enemy") && hasPowerup)
         {
-            Debug.Log(collision.gameObject.name);
-            Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 awayFromPlayer = collision.gameObject.transform.position - transform.position;
-            enemyRb.AddForce(awayFromPlayer * powerupForce, ForceMode.Impulse);
-
+            ForceAwayFromPlayer(collision.gameObject);
         }
-
+        //Smash效果
+        if (collision.gameObject.CompareTag("Ground") && hasPowerupSmash)
+        {
+            List<Enemy> enemies = new List<Enemy>(FindObjectsOfType<Enemy>());
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                ForceAwayFromPlayer(enemies[i].gameObject);
+            }       
+        }
     }
 
     IEnumerator PowerupCountdownRoutine()
-    {
+    {//弹力协程&指示
         yield return new WaitForSeconds(powerDur);
         hasPowerup = false;
         powerupIndicator.gameObject.SetActive(false);
     }
 
     IEnumerator PowerupShotCountdownRoutine()
+    //射击指示器协程
     {
         yield return new WaitForSeconds(powerDur);
         hasPowerupShot = false;
@@ -97,6 +120,7 @@ public class PlayerController : MonoBehaviour
     }
 
     IEnumerator ShotRoutine()
+    //射击协程
     {
         canShot = false;
         yield return new WaitForSeconds(shotInterval);
@@ -107,6 +131,27 @@ public class PlayerController : MonoBehaviour
         Shot();
         canShot = true;
     }
+
+    IEnumerator SmashCountdownRoutine()
+    //Smash指示器协程
+    {
+        yield return new WaitForSeconds(powerDur);
+        hasPowerupSmash = false;
+        PowerupSmashIndicator.gameObject.SetActive(false);
+    }
+    IEnumerator SmashRoutine()
+    //Smash协程
+    {
+        canSmash = false;
+        yield return new WaitForSeconds(shotInterval);
+        Smash();
+        yield return new WaitForSeconds(shotInterval);
+        Smash();
+        yield return new WaitForSeconds(shotInterval);
+        Smash();
+        canSmash = true;
+    }
+
     void Shot()
     {
         List<Enemy> enemies = new List<Enemy>(FindObjectsOfType<Enemy>());
@@ -123,5 +168,23 @@ public class PlayerController : MonoBehaviour
             // 设置子弹的目标敌人
             bullet.targetEnemy = enemy;
         }
+    }
+    void Smash()
+    {
+        float interval = 0.5f;
+        float lastTime = 0;
+        playerRb.AddForce(Vector3.up * 50, ForceMode.Impulse);
+        if(Time.time - lastTime < interval)
+        {
+            playerRb.AddForce(Vector3.down * 100, ForceMode.Impulse);
+            lastTime = Time.time;
+        }
+    }
+    void ForceAwayFromPlayer(GameObject collosionGameObj)
+    {
+        Debug.Log(collosionGameObj.name);
+        Rigidbody enemyRb = collosionGameObj.GetComponent<Rigidbody>();
+        Vector3 awayFromPlayer =collosionGameObj .transform.position - transform.position;
+        enemyRb.AddForce(awayFromPlayer * powerupForce, ForceMode.Impulse);
     }
 }

@@ -7,6 +7,7 @@ TagManager:
   - Powerup
   - Enemy
   - EnemyTest
+  - Ground
   layers:
   - Default
   - TransparentFX
