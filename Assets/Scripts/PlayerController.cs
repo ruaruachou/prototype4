@@ -20,7 +20,8 @@ public class PlayerController : MonoBehaviour
     public float shotInterval = 1f;
     public bool hasPowerupSmash = false;
     public float smashJumpForce = 10f;
-    private bool canSmash = true;
+    public bool isInAir = false;
+
 
 
     public float powerupForce = 20;
@@ -47,10 +48,10 @@ public class PlayerController : MonoBehaviour
             Shot();
             StartCoroutine(ShotRoutine());
         }
-        if (hasPowerupSmash&&canSmash)
+        if (hasPowerupSmash)
         {
             Smash();
-            StartCoroutine(SmashRoutine());
+
         }
     }
 
@@ -100,7 +101,7 @@ public class PlayerController : MonoBehaviour
             for (int i = 0; i < enemies.Count; i++)
             {
                 ForceAwayFromPlayer(enemies[i].gameObject);
-            }       
+            }
         }
     }
 
@@ -139,7 +140,7 @@ public class PlayerController : MonoBehaviour
         hasPowerupSmash = false;
         PowerupSmashIndicator.gameObject.SetActive(false);
     }
-    IEnumerator SmashRoutine()
+    /*IEnumerator SmashRoutine()
     //SmashÐ­³Ì
     {
         canSmash = false;
@@ -150,7 +151,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(shotInterval);
         Smash();
         canSmash = true;
-    }
+    }*/
 
     void Shot()
     {
@@ -171,20 +172,25 @@ public class PlayerController : MonoBehaviour
     }
     void Smash()
     {
-        float interval = 0.5f;
-        float lastTime = 0;
-        playerRb.AddForce(Vector3.up * 50, ForceMode.Impulse);
-        if(Time.time - lastTime < interval)
+       
+        if (Input.GetKeyDown(KeyCode.Space) && isInAir == false)
         {
-            playerRb.AddForce(Vector3.down * 100, ForceMode.Impulse);
-            lastTime = Time.time;
+            transform.position = new Vector3(transform.position.x, 5, transform.position.z);
+            isInAir = true;
+        }
+  
+        if (Input.GetKeyUp(KeyCode.Space) && isInAir)
+        {
+            playerRb.AddForce(Vector3.down * 300, ForceMode.Impulse);
+            isInAir = false;
         }
     }
+
     void ForceAwayFromPlayer(GameObject collosionGameObj)
     {
         Debug.Log(collosionGameObj.name);
         Rigidbody enemyRb = collosionGameObj.GetComponent<Rigidbody>();
-        Vector3 awayFromPlayer =collosionGameObj .transform.position - transform.position;
+        Vector3 awayFromPlayer = collosionGameObj.transform.position - transform.position;
         enemyRb.AddForce(awayFromPlayer * powerupForce, ForceMode.Impulse);
     }
 }

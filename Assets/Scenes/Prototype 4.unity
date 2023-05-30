@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,6 +155,7 @@ MonoBehaviour:
   levelSpawn1:
   - {fileID: 9018413552295610258, guid: dd64374d72e9cbf488ea540806f2b7b3, type: 3}
   - {fileID: 9018413552295610258, guid: dd64374d72e9cbf488ea540806f2b7b3, type: 3}
+  - {fileID: 2952768548563001414, guid: c7066d0f01852e2468b1e8eae35170c8, type: 3}
   levelSpawn2: []
   wave: 020000000300000004000000
   enemyCount: 0
@@ -468,6 +469,8 @@ MonoBehaviour:
   hasPowerupShot: 0
   shotInterval: 2
   hasPowerupSmash: 0
+  smashJumpForce: 10
+  isInAir: 0
   powerupForce: 20
   powerDur: 7
 --- !u!1001 &799073827
