@@ -9,6 +9,7 @@ public class SpawnManager : MonoBehaviour
     //敌人数组：用于存放各种敌人
     public GameObject[] levelSpawn1;
     public GameObject[] levelSpawn2;
+    public GameObject[] levelSpawn3;
     //波次数组：数组长度为波次数量，每个元素的值为本波生成的数量
     public int[] wave;
     public int enemyCount;//显示当前实时敌人数量
@@ -16,10 +17,6 @@ public class SpawnManager : MonoBehaviour
 
     //随机生成范围
     public float spawnRangeX = 8;
-
-    void Start()
-    {
-    }
 
     void Update()
     {
@@ -38,20 +35,24 @@ public class SpawnManager : MonoBehaviour
                     SpawnEnemy(levelSpawn2);
                     currentWave++;
                     break;
+                case 2:
+                    SpawnEnemy(levelSpawn3);
+                    currentWave++;
+                    break;
             }
         }
     }
 
-    //生成敌人
+    //根据数组元素生成敌人或Powerup
     void SpawnEnemy(GameObject[] currentLevelSpawn)
     {
         Debug.Log("SpawnEnemy");
-        Vector3 spawnPos = new Vector3(Random.Range(-spawnRangeX, spawnRangeX), 0, Random.Range(-spawnRangeX, spawnRangeX));
+        
         for (int i = 0; i < currentLevelSpawn.Length; i++)
         {
+            Vector3 spawnPos = new Vector3(Random.Range(-spawnRangeX, spawnRangeX), 0, Random.Range(-spawnRangeX, spawnRangeX));
             Instantiate(currentLevelSpawn[i],spawnPos , transform.rotation);
         }
-
     }
 }
 

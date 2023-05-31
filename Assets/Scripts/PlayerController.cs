@@ -7,13 +7,14 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 20;
-    public GameObject focalPoint;
-    public GameObject powerupIndicator;
-    public GameObject powerupShotIndicator;
-    public GameObject bulletPrefab;
-    public GameObject PowerupSmashIndicator;
+    public GameObject focalPoint;//用于再子物体上获取本地坐标
+    public GameObject powerupIndicator;//buff指示器
+    public GameObject powerupShotIndicator;//射击buff指示器
+    public GameObject bulletPrefab;//射击子弹
+    public GameObject PowerupSmashIndicator;//Smash buff指示器
     private Bullet bullet;
 
+   //buff状态相关
     public bool hasPowerup = false;
     public bool hasPowerupShot = false;
     private bool canShot = true;
@@ -21,8 +22,6 @@ public class PlayerController : MonoBehaviour
     public bool hasPowerupSmash = false;
     public float smashJumpForce = 10f;
     public bool isInAir = false;
-
-
 
     public float powerupForce = 20;
     public float powerDur = 20;
@@ -37,21 +36,26 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        //只有前后移动
         float ver = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * moveSpeed * ver);
+        
+        //buff指示器位置跟随
         powerupIndicator.gameObject.transform.position = transform.position;
         powerupShotIndicator.gameObject.transform.position = transform.position;
         PowerupSmashIndicator.gameObject.transform.position = transform.position;
 
+        //射击buff开启条件
         if (hasPowerupShot && canShot)
         {
             Shot();
             StartCoroutine(ShotRoutine());
         }
+
+        //smash开启条件
         if (hasPowerupSmash)
         {
             Smash();
-
         }
     }
 
@@ -61,7 +65,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Powerup"))
-        {//开启Powerup
+        {//开启Powerup，并开启协程以控制持续时间
             hasPowerup = true;
             Destroy(other.gameObject);
             powerupIndicator.gameObject.SetActive(true);
@@ -70,7 +74,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (other.name == "PowerupShot" || other.name == "PowerupShot(Clone)")
-        {//开启射击
+        {//开启射击和结束
             hasPowerupShot = true;
             Destroy(other.gameObject);
             powerupShotIndicator.gameObject.SetActive(true);
@@ -78,7 +82,7 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PowerupShotCountdownRoutine());
         }
         if (other.name == "PowerupSmash" || other.name == "PowerupSmash(Clone)")
-        {//开启Smash
+        {//开启Smash和结束
             hasPowerupSmash = true;
             Destroy(other.gameObject);
             PowerupSmashIndicator.gameObject.SetActive(true);
@@ -97,6 +101,7 @@ public class PlayerController : MonoBehaviour
         //Smash效果
         if (collision.gameObject.CompareTag("Ground") && hasPowerupSmash)
         {
+            //在碰到地面时遍历场上的Enemy，给每个Enemy AddForce
             List<Enemy> enemies = new List<Enemy>(FindObjectsOfType<Enemy>());
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -140,18 +145,7 @@ public class PlayerController : MonoBehaviour
         hasPowerupSmash = false;
         PowerupSmashIndicator.gameObject.SetActive(false);
     }
-    /*IEnumerator SmashRoutine()
-    //Smash协程
-    {
-        canSmash = false;
-        yield return new WaitForSeconds(shotInterval);
-        Smash();
-        yield return new WaitForSeconds(shotInterval);
-        Smash();
-        yield return new WaitForSeconds(shotInterval);
-        Smash();
-        canSmash = true;
-    }*/
+
 
     void Shot()
     {
@@ -170,6 +164,7 @@ public class PlayerController : MonoBehaviour
             bullet.targetEnemy = enemy;
         }
     }
+    //起跳并落下的方法
     void Smash()
     {
        
@@ -186,6 +181,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //从自身向参数Obj AddForce的方法
     void ForceAwayFromPlayer(GameObject collosionGameObj)
     {
         Debug.Log(collosionGameObj.name);

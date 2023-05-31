@@ -11,6 +11,7 @@ public class PlayerControllerX : MonoBehaviour
     public bool hasPowerup;
     public GameObject powerupIndicator;
     public int powerUpDuration = 5;
+    public ParticleSystem smokePFX;
 
     private float normalStrength = 10; // how hard to hit enemy without powerup
     private float powerupStrength = 25; // how hard to hit enemy with powerup
@@ -19,18 +20,20 @@ public class PlayerControllerX : MonoBehaviour
     {
         playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
+        
     }
 
     void Update()
     {
         // Add force to player in direction of the focal point (and camera)
         float verticalInput = Input.GetAxis("Vertical");
-        playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); //从它身上的子物体来获取本地坐标的前进方向
+        playerRb.AddForce(focalPoint.transform.forward * verticalInput * speed * Time.deltaTime); //从身上的子物体来获取本地坐标的前进方向
 
         //加速
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            playerRb.AddForce(transform.localPosition.forward * 50,ForceMode.Impulse);
+            playerRb.AddForce(focalPoint.transform.forward * 50,ForceMode.Impulse);
+            smokePFX.Play();
         }
 
         // Set powerup indicator position to beneath player
